@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 📝 Daily Work Logger
 
 A beautiful Streamlit web application for logging daily work activities directly to Google Sheets. Track your projects, learnings, and improvements with an intuitive interface.
@@ -182,6 +181,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 **Happy logging! 📝✨**
 
 
+
 =======
 📊 Daily Work Logger
 
@@ -314,4 +314,3 @@ Make sure you have enabled both the Google Sheets API and the Google Drive API i
 📄 License
 
 This project is licensed under the MIT License.
->>>>>>> 3211ac3 (Updated: latest changes to Daily Work Logger)
