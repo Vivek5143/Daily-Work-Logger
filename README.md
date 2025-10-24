@@ -6,9 +6,8 @@ A beautiful Streamlit web application for logging daily work activities directly
 
 - 🎨 **Beautiful UI** with custom CSS styling
 - 📊 **Google Sheets Integration** - automatically saves to your spreadsheet
-- 📝 **Flexible Input** - supports 3 or 4 column formats
+- 📝 **Flexible Input** - supports multi-column formats
 - 🔄 **Real-time Updates** - see your data immediately
-- 📱 **Responsive Design** - works on desktop and mobile
 - 🎯 **Easy to Use** - just paste your data and click save
 
 ## 🚀 Quick Start
@@ -23,7 +22,7 @@ A beautiful Streamlit web application for logging daily work activities directly
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/daily-work-logger.git
+   git clone https://github.com/Vivek5143/daily-work-logger.git
    cd daily-work-logger
    ```
 
@@ -195,3 +194,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Happy logging! 📝✨**
+
