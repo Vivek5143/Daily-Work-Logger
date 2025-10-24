@@ -128,21 +128,6 @@ Change the sheet name in `main.py`:
 GOOGLE_SHEET_NAME = "Your Custom Sheet Name"
 ```
 
-## 📁 Project Structure
-
-```
-daily-work-logger/
-├── main.py                 # Main Streamlit application
-├── style.css              # Custom CSS styling
-├── requirements.txt       # Python dependencies
-├── run_logger.bat         # Windows batch file to run the app
-├── secrets.toml.example   # Example configuration file
-├── .gitignore            # Git ignore file
-├── README.md             # This file
-└── .streamlit/
-    └── secrets.toml       # Your actual credentials (not in git)
-```
-
 ## 🔒 Security
 
 - **Never commit** your `secrets.toml` file to version control
@@ -194,4 +179,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Happy logging! 📝✨**
+
 
