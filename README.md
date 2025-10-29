@@ -1,8 +1,7 @@
-<<<<<<< HEAD
+
 📝 Daily AI Work Logger
-=======
-# 📝 Daily Work Logger
->>>>>>> 4c74e68d9aaefd035eafc1a1c56b91d3caec70b8
+
+
 
 A beautiful Streamlit web application, powered by the Gemini AI API, for logging daily work activities directly to Google Sheets. Track your projects, learnings, and improvements simply by writing a summary of your day.
 
