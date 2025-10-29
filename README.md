@@ -1,128 +1,88 @@
+# 📝 Daily AI Work Logger
 
-📝 Daily AI Work Logger
+A beautiful **Streamlit** web application powered by the **Gemini AI API**, designed to help you log your daily work activities directly into **Google Sheets**.
+Track your projects, accomplishments, insights, and blockers simply by writing a natural-language summary of your day.
 
+---
 
+## ✨ Features
 
-A beautiful Streamlit web application, powered by the Gemini AI API, for logging daily work activities directly to Google Sheets. Track your projects, learnings, and improvements simply by writing a summary of your day.
+* 🧠 **Natural Language Input:**
+  No need to format CSVs — just describe your day (e.g., *“Today I finished the homepage for the X project.”*).
 
-✨ Features
+* 🤖 **AI-Powered Parsing:**
+  Uses Gemini AI to intelligently extract and categorize your work into structured columns.
 
-🧠 Natural Language Input: No need to format CSVs. Just write what you did (e.g., "Today I finished the homepage for the 'X' project. It's now live.")
+* 🎨 **Beautiful UI:**
+  Clean and minimal interface with custom CSS styling.
 
-✨ AI-Powered Parsing: Uses the Gemini AI to intelligently extract and categorize your tasks into columns.
+* 📊 **Google Sheets Integration:**
+  Automatically appends your parsed work logs as new rows in a Google Sheet.
 
-🎨 Beautiful UI with custom CSS styling.
+* 🔄 **Real-time Updates:**
+  Instantly preview parsed data before saving.
 
-📊 Google Sheets Integration: Automatically appends your work log as new rows in a specified Google Sheet.
+* 🔐 **Secure Secrets Handling:**
+  All API keys and credentials are safely managed via Streamlit Secrets.
 
-🔄 Real-time Updates: See your parsed data immediately before saving.
+---
 
-🚀 Quick Start
+## 🚀 Quick Start
 
-Prerequisites
+### 🧩 Prerequisites
 
-Python 3.8 or higher
+* Python **3.8+**
+* Google Cloud Project with **Sheets API** and **Drive API** enabled
+* A **Gemini API Key** from [Google AI Studio](https://aistudio.google.com/)
+* A **Google Service Account** with proper permissions
 
-Google Cloud Project with Sheets API and Drive API enabled
+---
 
-A Gemini API Key from Google AI Studio
+### ⚙️ Installation
 
-Google Service Account with proper permissions
+#### 1. Clone the Repository
 
-Installation
-
-Clone the repository
-
-git clone [https://github.com/Vivek5143/Daily-Work-Logger.git](https://github.com/Vivek5143/Daily-Work-Logger.git)
+```bash
+git clone https://github.com/Vivek5143/Daily-Work-Logger.git
 cd Daily-Work-Logger
+```
 
+#### 2. Create and Activate Virtual Environment
 
-Install dependencies
+**Windows (CMD):**
 
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+**Mac / Linux:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
+---
 
-Set up your credentials in .streamlit/secrets.toml
+## 🔧 Configuration
 
-Create a folder named .streamlit in your project directory.
+### Create `.streamlit/secrets.toml`
 
-Create a file inside it named secrets.toml.
+Create a folder named `.streamlit` in your project directory.
+Inside it, create a file called `secrets.toml` and paste the following template:
 
-Copy the structure from the "Configuration" section below and fill in your actual credentials for both the gemini_api_key and the gcp_service_account.
-
-Share your Google Sheet
-
-Create a Google Sheet named "Daily Work Log" (or whatever you set in the app).
-
-Share it with your service account email (found in your credentials) and give it "Editor" permissions.
-
-Run the application
-Make sure your gemini_logger_app.py file is named main.py if you use this command.
-
-streamlit run main.py
-
-
-📋 Usage
-
-The app now accepts natural language. The old CSV format is no longer needed.
-
-Write Your Summary: In the text area, write a few sentences about what you accomplished. The AI is trained to look for projects, accomplishments, and insights/blockers.
-
-Click "Parse Work Log": The AI will process your text and show you a preview of the structured data it extracted.
-
-Save to Sheet: If the preview looks good, click "Save to Google Sheet" to log your work.
-
-Example Input
-
-Today was all about the new user dashboard. I finished the main layout with the new charting library.
-I also had a meeting about the Q4 roadmap, which helped clarify our goals.
-The only blocker is that I'm still waiting on the final API endpoints from the backend team.
-
-
-AI-Parsed Output
-
-Date
-
-Project / Category
-
-Accomplishment
-
-Key Insight / Blocker
-
-2025-10-29
-
-User Dashboard
-
-Finished main layout with new charting library
-
-
-
-2025-10-29
-
-Q4 Roadmap
-
-Meeting clarified goals
-
-
-
-2025-10-29
-
-Backend API
-
-
-
-Waiting on final API endpoints from the backend team.
-
-🔧 Configuration
-
-Environment Variables (.streamlit/secrets.toml)
-
-Create .streamlit/secrets.toml and add your keys:
-
-# Your key from Google AI Studio
+```toml
+### Gemini API Key (from Google AI Studio)
 gemini_api_key = "...your...gemini...api...key"
 
-# Your Google Cloud Service Account credentials
+### Google Cloud Service Account credentials
 [gcp_service_account]
 type = "service_account"
 project_id = "your-project-id"
@@ -132,76 +92,140 @@ YOUR_PRIVATE_KEY_GOES_HERE
 -----END PRIVATE KEY-----"""
 client_email = "your-service-account@your-project.iam.gserviceaccount.com"
 client_id = "your-client-id"
-auth_uri = "[https://accounts.google.com/o/oauth2/auth](https://accounts.google.com/o/oauth2/auth)"
-token_uri = "[https://oauth2.googleapis.com/token](https://oauth2.googleapis.com/token)"
-auth_provider_x509_cert_url = "[https://www.googleapis.com/oauth2/v1/certs](https://www.googleapis.com/oauth2/v1/certs)"
-client_x509_cert_url = "[https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com](https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com)"
+auth_uri = "https://accounts.google.com/o/oauth2/auth"
+token_uri = "https://oauth2.googleapis.com/token"
+auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
+client_x509_cert_url = "https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com"
+```
 
+---
 
-Customization
+## 📄 Google Sheet Setup
 
-Styling: Edit style.css to customize the appearance.
+1. Create a **Google Sheet** (e.g., `Daily Work Log`).
+2. Share it with your **Service Account email** (from the credentials above).
+3. Grant **Editor permissions**.
 
-Sheet Name: Change the sheet name in your Python app file:
+---
 
+## ▶️ Run the Application
+
+Rename your main app file to `main.py` (or adjust the command) and run:
+
+```bash
+streamlit run main.py
+```
+
+---
+
+## 💼 Usage
+
+### 1. Write Your Summary
+
+Type a few sentences about what you worked on today.
+Example:
+
+> “Worked on the login page and fixed the timeout bug.”
+
+### 2. Click **“Parse Work Log”**
+
+Gemini AI will automatically detect and extract:
+
+* **Date**
+* **Project / Category**
+* **Accomplishment**
+* **Key Insight / Blocker**
+
+### 3. Preview Your Parsed Data
+
+Review what the AI extracted.
+
+### 4. Click **“Save to Google Sheet”**
+
+Your structured log will be added to your Google Sheet.
+
+---
+
+## 💡 Example
+
+**Input:**
+
+```text
+Today was all about the new user dashboard. I finished the main layout with the new charting library. I also had a meeting about the Q4 roadmap, which helped clarify our goals. The only blocker is that I'm still waiting on the final API endpoints from the backend team.
+```
+
+**AI-Parsed Output:**
+
+| Date       | Project / Category | Accomplishment                                 | Key Insight / Blocker                                |
+| ---------- | ------------------ | ---------------------------------------------- | ---------------------------------------------------- |
+| 2025-10-29 | User Dashboard     | Finished main layout with new charting library | —                                                    |
+| 2025-10-29 | Q4 Roadmap         | Meeting clarified goals                        | —                                                    |
+| 2025-10-29 | Backend API        | —                                              | Waiting on final API endpoints from the backend team |
+
+---
+
+## 🎨 Customization
+
+### Styling
+
+Edit `style.css` to change fonts, colors, and UI layout.
+
+### Sheet Name
+
+In your Python file, update:
+
+```python
 GOOGLE_SHEET_NAME = "Your Custom Sheet Name"
+```
 
-<<<<<<< HEAD
+---
 
-🔒 Security
+## 🔒 Security
 
-Never commit your secrets.toml file to version control. (Use the .gitignore file!)
+* Never commit `.streamlit/secrets.toml` to GitHub.
+* Add `.streamlit/secrets.toml` to your `.gitignore`.
+* Restrict your service account permissions (Sheets + Drive only).
 
-Limit service account permissions to only what's needed.
+---
 
-🐛 Troubleshooting
+## 🐛 Troubleshooting
 
-Common Issues
+| Issue                                     | Possible Fix                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------ |
+| **Gemini API Error / Key not found**      | Check `gemini_api_key` in `secrets.toml` and restart Streamlit.                |
+| **Spreadsheet not found**                 | Ensure the sheet name matches exactly and is shared with your service account. |
+| **Permission denied / Incorrect padding** | Check private key formatting (use triple quotes `"""` as shown).               |
+| **AI not parsing correctly**              | Try simplifying your input text or ensure the Gemini key is valid.             |
 
-Gemini AI Error / Key not found
+---
 
-Ensure your gemini_api_key is correctly added to secrets.toml as a top-level key.
+## 🤝 Contributing
 
-Make sure your secrets.toml file is in the .streamlit folder.
+1. **Fork** the repository
+2. Create a new branch:
 
-You must fully restart Streamlit (Ctrl+C and streamlit run...) after changing secrets.
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+3. **Commit** your changes and **push**:
 
-"Spreadsheet not found"
+   ```bash
+   git push origin feature/your-feature
+   ```
+4. Submit a **Pull Request** 🎉
 
-Verify the GOOGLE_SHEET_NAME in the script matches your sheet exactly.
+---
 
-Check that your sheet is shared with the client_email from your service account.
+## 📄 License
 
-"Permission denied" / "Incorrect padding"
+This project is licensed under the **MIT License**.
 
-Ensure your service account has "Editor" permissions on the sheet.
+---
 
-Check that the private_key in secrets.toml is copied correctly, using the """...""" multiline format.
+## Acknowledgments
 
-🤝 Contributing
+Built with ❤️ using:
 
-Fork the repository
-
-Create a feature branch
-
-Make your changes
-
-Test thoroughly
-
-Submit a pull request
-
-📄 License
-
-This project is licensed under the MIT License.
-
-🙏 Acknowledgments
-
-Built with Streamlit
-
-AI parsing by Google's Gemini API
-
-Google Sheets integration via gspread
-
-Happy logging! 📝✨
-=======
->>>>>>> 4c74e68d9aaefd035eafc1a1c56b91d3caec70b8
+* **Streamlit**
+* **Google Gemini API**
+* **gspread**
