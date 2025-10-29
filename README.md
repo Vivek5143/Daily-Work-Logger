@@ -1,203 +1,18 @@
-<<<<<<< HEAD
-# 📝 Daily Work Logger
+📝 Daily AI Work Logger
 
-A beautiful Streamlit web application for logging daily work activities directly to Google Sheets. Track your projects, learnings, and improvements with an intuitive interface.
-
-## ✨ Features
-
-- 🎨 **Beautiful UI** with custom CSS styling
-- 📊 **Google Sheets Integration** - automatically saves to your spreadsheet
-- 📝 **Flexible Input** - supports multi-column formats
-- 🔄 **Real-time Updates** - see your data immediately
-- 🎯 **Easy to Use** - just paste your data and click save
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.8 or higher
-- Google Cloud Project with Sheets API and Drive API enabled
-- Google Service Account with proper permissions
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Vivek5143/daily-work-logger.git
-   cd daily-work-logger
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Set up Google Sheets credentials**
-   - Create a Google Cloud Project
-   - Enable Google Sheets API and Google Drive API
-   - Create a Service Account
-   - Download the JSON credentials
-   - Copy `secrets.toml.example` to `.streamlit/secrets.toml`
-   - Fill in your actual credentials
-
-4. **Share your Google Sheet**
-   - Create a Google Sheet named "Daily Work Log"
-   - Share it with your service account email (Editor permissions)
-
-5. **Run the application**
-   ```bash
-   streamlit run main.py
-   ```
-   
-   Or use the batch file:
-   ```bash
-   run_logger.bat
-   ```
-
-## 📋 Usage
-
-### Input Format
-
-The app accepts CSV data in two formats:
-
-**3 Columns (Date will be added automatically):**
-```
-Project Name, What I Learned, What Needs Improvement
-```
-
-**4 Columns (Date included):**
-```
-Date, Project Name, What I Learned, What Needs Improvement
-```
-
-### Example Data
-
-```
-AI Development, Built a chatbot, Need to improve error handling
-Data Analysis, Created visualizations, Learn more about statistics
-Web Design, Improved UI/UX, Practice responsive design
-```
-
-## 🔧 Configuration
-
-### Google Sheets Setup
-
-1. **Create a Google Sheet** named "Daily Work Log"
-2. **Enable APIs** in Google Cloud Console:
-   - Google Sheets API
-   - Google Drive API
-3. **Create Service Account** and download credentials
-4. **Share the sheet** with your service account email
-
-### Environment Variables
-
-Create `.streamlit/secrets.toml` with your Google credentials:
-
-```toml
-[gcp_service_account]
-type = "service_account"
-project_id = "your-project-id"
-private_key_id = "your-private-key-id"
-private_key = "-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n"
-client_email = "your-service-account@your-project.iam.gserviceaccount.com"
-client_id = "your-client-id"
-auth_uri = "https://accounts.google.com/o/oauth2/auth"
-token_uri = "https://oauth2.googleapis.com/token"
-auth_provider_x509_cert_url = "https://www.googleapis.com/oauth2/v1/certs"
-client_x509_cert_url = "https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com"
-```
-
-## 🎨 Customization
-
-### Styling
-
-Edit `style.css` to customize the appearance:
-
-```css
-/* Customize colors, fonts, and layout */
-h1 {
-    color: #your-color;
-    font-size: 2.5rem;
-}
-```
-
-### Google Sheet Name
-
-Change the sheet name in `main.py`:
-
-```python
-GOOGLE_SHEET_NAME = "Your Custom Sheet Name"
-```
-
-## 🔒 Security
-
-- **Never commit** your `secrets.toml` file to version control
-- **Use environment variables** for production deployments
-- **Rotate service account keys** regularly
-- **Limit service account permissions** to only what's needed
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **"No access token in response"**
-   - Check that APIs are enabled
-   - Verify service account has access to the sheet
-   - Ensure OAuth scopes are correct
-
-2. **"Spreadsheet not found"**
-   - Verify sheet name matches exactly
-   - Check that sheet is shared with service account
-
-3. **"Permission denied"**
-   - Ensure service account has Editor permissions
-   - Check that the sheet exists and is accessible
-
-### Getting Help
-
-- Check the [Streamlit documentation](https://docs.streamlit.io/)
-- Review [Google Sheets API documentation](https://developers.google.com/sheets/api)
-- Open an issue on GitHub for bugs or feature requests
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Built with [Streamlit](https://streamlit.io/)
-- Google Sheets integration via [gspread](https://github.com/burnash/gspread)
-- Styled with custom CSS
-
----
-
-**Happy logging! 📝✨**
-
-
-=======
-📊 Daily Work Logger
-
-A polished Streamlit web application for logging daily work activities directly to Google Sheets. Track your projects, accomplishments, and insights with an intuitive interface.
+A beautiful Streamlit web application, powered by the Gemini AI API, for logging daily work activities directly to Google Sheets. Track your projects, learnings, and improvements simply by writing a summary of your day.
 
 ✨ Features
 
-🎨 Beautiful UI with custom CSS styling
+🧠 Natural Language Input: No need to format CSVs. Just write what you did (e.g., "Today I finished the homepage for the 'X' project. It's now live.")
 
-📊 Google Sheets Integration - automatically saves to your spreadsheet
+✨ AI-Powered Parsing: Uses the Gemini AI to intelligently extract and categorize your tasks into columns.
 
-💅 Automated Sheet Formatting - auto-sizes columns and styles the header row
+🎨 Beautiful UI with custom CSS styling.
 
-📝 Flexible Input - supports multi-column formats
+📊 Google Sheets Integration: Automatically appends your work log as new rows in a specified Google Sheet.
 
-🖱️ Click-to-Run - Includes .bat (Windows) and .sh (Mac/Linux) scripts to launch the app instantly
+🔄 Real-time Updates: See your parsed data immediately before saving.
 
 🚀 Quick Start
 
@@ -205,113 +20,182 @@ Prerequisites
 
 Python 3.8 or higher
 
-A Google Cloud Project with:
+Google Cloud Project with Sheets API and Drive API enabled
 
-Google Sheets API enabled
+A Gemini API Key from Google AI Studio
 
-Google Drive API enabled
-
-A Google Service Account with Editor access to your target Google Sheet.
+Google Service Account with proper permissions
 
 Installation
 
-Clone the repository (or download all the files):
-Put app.py, style.css, requirements.txt, run_logger.bat, and run_logger.sh in the same folder.
+Clone the repository
 
-Install dependencies:
-Open your terminal or command prompt in that folder and run:
+git clone [https://github.com/Vivek5143/Daily-Work-Logger.git](https://github.com/Vivek5143/Daily-Work-Logger.git)
+cd Daily-Work-Logger
+
+
+Install dependencies
 
 pip install -r requirements.txt
 
 
-Set up Google Sheets credentials:
+Set up your credentials in .streamlit/secrets.toml
 
-Go to your Google Cloud Project and create a Service Account.
+Create a folder named .streamlit in your project directory.
 
-Create a JSON key for the service account and download it.
+Create a file inside it named secrets.toml.
 
-Create a new folder named .streamlit in your project directory.
+Copy the structure from the "Configuration" section below and fill in your actual credentials for both the gemini_api_key and the gcp_service_account.
 
-Inside .streamlit, create a file named secrets.toml (i.e., .streamlit/secrets.toml).
+Share your Google Sheet
 
-Open the downloaded JSON key (it's a text file) and copy its entire contents.
+Create a Google Sheet named "Daily Work Log" (or whatever you set in the app).
 
-Paste the contents into secrets.toml and put [gcp_service_account] right at the top, above the text you just pasted.
+Share it with your service account email (found in your credentials) and give it "Editor" permissions.
 
-Example .streamlit/secrets.toml:
+Run the application
+Make sure your gemini_logger_app.py file is named main.py if you use this command.
 
+streamlit run main.py
+
+
+📋 Usage
+
+The app now accepts natural language. The old CSV format is no longer needed.
+
+Write Your Summary: In the text area, write a few sentences about what you accomplished. The AI is trained to look for projects, accomplishments, and insights/blockers.
+
+Click "Parse Work Log": The AI will process your text and show you a preview of the structured data it extracted.
+
+Save to Sheet: If the preview looks good, click "Save to Google Sheet" to log your work.
+
+Example Input
+
+Today was all about the new user dashboard. I finished the main layout with the new charting library.
+I also had a meeting about the Q4 roadmap, which helped clarify our goals.
+The only blocker is that I'm still waiting on the final API endpoints from the backend team.
+
+
+AI-Parsed Output
+
+Date
+
+Project / Category
+
+Accomplishment
+
+Key Insight / Blocker
+
+2025-10-29
+
+User Dashboard
+
+Finished main layout with new charting library
+
+
+
+2025-10-29
+
+Q4 Roadmap
+
+Meeting clarified goals
+
+
+
+2025-10-29
+
+Backend API
+
+
+
+Waiting on final API endpoints from the backend team.
+
+🔧 Configuration
+
+Environment Variables (.streamlit/secrets.toml)
+
+Create .streamlit/secrets.toml and add your keys:
+
+# Your key from Google AI Studio
+gemini_api_key = "...your...gemini...api...key"
+
+# Your Google Cloud Service Account credentials
 [gcp_service_account]
 type = "service_account"
 project_id = "your-project-id"
 private_key_id = "your-private-key-id"
-private_key = "-----BEGIN PRIVATE KEY-----\nYOUR_KEY_HERE\n-----END PRIVATE KEY-----\n"
-client_email = "your-service-account@your-project-id.iam.gserviceaccount.com"
+private_key = """-----BEGIN PRIVATE KEY-----
+YOUR_PRIVATE_KEY_GOES_HERE
+-----END PRIVATE KEY-----"""
+client_email = "your-service-account@your-project.iam.gserviceaccount.com"
 client_id = "your-client-id"
 auth_uri = "[https://accounts.google.com/o/oauth2/auth](https://accounts.google.com/o/oauth2/auth)"
 token_uri = "[https://oauth2.googleapis.com/token](https://oauth2.googleapis.com/token)"
 auth_provider_x509_cert_url = "[https://www.googleapis.com/oauth2/v1/certs](https://www.googleapis.com/oauth2/v1/certs)"
-client_x509_cert_url = "[https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project-id.iam.gserviceaccount.com](https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project-id.iam.gserviceaccount.com)"
+client_x509_cert_url = "[https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com](https://www.googleapis.com/robot/v1/metadata/x509/your-service-account%40your-project.iam.gserviceaccount.com)"
 
 
-Share your Google Sheet:
+Customization
 
-Create a new Google Sheet. You can name it "Daily Work Log" or anything else.
+Styling: Edit style.css to customize the appearance.
 
-In app.py, make sure the GOOGLE_SHEET_NAME variable matches your sheet's name exactly.
+Sheet Name: Change the sheet name in your Python app file:
 
-Click the "Share" button on your Google Sheet.
-
-Paste the client_email from your secrets.toml file into the sharing box.
-
-Make sure to give it "Editor" permissions and click "Send".
-
-Run the application:
-
-On Windows: Just double-click run_logger.bat.
-
-On Mac/Linux: You may need to run this command in your terminal one time to make the script executable: chmod +x run_logger.sh. After that, you can just double-click run_logger.sh.
-
-📋 Usage
-
-Input Format
-
-The app accepts CSV data in two formats.
-
-3 Columns (Date will be added automatically):
-
-Project / Category,Accomplishment,Key Insight / Outcome
+GOOGLE_SHEET_NAME = "Your Custom Sheet Name"
 
 
-4 Columns (Date included):
+🔒 Security
 
-Date,Project / Category,Accomplishment,Key Insight / Outcome
+Never commit your secrets.toml file to version control. (Use the .gitignore file!)
 
-
-Example Data
-
-8/12/2025,AutoGen,Practiced prompt workflows and configuration,Understood prompt orchestration and API flow
+Limit service account permissions to only what's needed.
 
 🐛 Troubleshooting
 
-Error: No access token in response.
+Common Issues
 
-This is almost always a system clock issue. Make sure your computer's date and time are set to "Set time automatically".
+Gemini AI Error / Key not found
 
-If your clock is correct, try generating a new JSON key for your service account and updating your secrets.toml file.
+Ensure your gemini_api_key is correctly added to secrets.toml as a top-level key.
 
-Error: SpreadsheetNotFound
+Make sure your secrets.toml file is in the .streamlit folder.
 
-Check that the GOOGLE_SHEET_NAME variable in app.py exactly matches the name of your Google Sheet.
+You must fully restart Streamlit (Ctrl+C and streamlit run...) after changing secrets.
 
-Make sure you have shared the sheet with your service account's client_email.
+"Spreadsheet not found"
 
-Error: PermissionError or insufficient permissions
+Verify the GOOGLE_SHEET_NAME in the script matches your sheet exactly.
 
-Go to your Google Sheet's "Share" settings and make sure your service account has the "Editor" role, not "Viewer" or "Commenter".
+Check that your sheet is shared with the client_email from your service account.
 
-Make sure you have enabled both the Google Sheets API and the Google Drive API in your Google Cloud project.
+"Permission denied" / "Incorrect padding"
+
+Ensure your service account has "Editor" permissions on the sheet.
+
+Check that the private_key in secrets.toml is copied correctly, using the """...""" multiline format.
+
+🤝 Contributing
+
+Fork the repository
+
+Create a feature branch
+
+Make your changes
+
+Test thoroughly
+
+Submit a pull request
 
 📄 License
 
 This project is licensed under the MIT License.
->>>>>>> 3211ac3 (Updated: latest changes to Daily Work Logger)
+
+🙏 Acknowledgments
+
+Built with Streamlit
+
+AI parsing by Google's Gemini API
+
+Google Sheets integration via gspread
+
+Happy logging! 📝✨

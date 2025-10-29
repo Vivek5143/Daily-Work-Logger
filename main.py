@@ -3,17 +3,17 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 import gspread
-# Removed: from google.oauth2.service_account import Credentials
 import gspread_formatting as gfmt
+import google.generativeai as genai
+import json
 
 # ============ CONFIGURATION ============
-# --- FIXED: Removed invisible character from "Daily Work Log" ---
 GOOGLE_SHEET_NAME = "Daily Work Log" 
 WORKSHEET_NAME = "Sheet1"
 # ---------------------------------
 
 # ============ PAGE SETUP ============
-st.set_page_config(page_title="📊 Daily Work Logger (Google Sheets)", page_icon="📊", layout="wide")
+st.set_page_config(page_title="📊 AI Daily Work Logger", layout="wide")
 
 # ============ CUSTOM CSS FOR STYLING ============
 def load_css(file_name):
@@ -22,7 +22,8 @@ def load_css(file_name):
         with open(file_name) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     except FileNotFoundError:
-        st.error(f"CSS file not found: {file_name}")
+        # Don't show an error, just a warning in the console or log if needed
+        pass
 
 # Load the custom CSS
 load_css("style.css")
@@ -34,19 +35,16 @@ load_css("style.css")
 def connect_to_google_sheets():
     """Establish a connection to the Google Sheet."""
     try:
-        # Scopes for the Google Sheets API
         scopes = [
             "https://www.googleapis.com/auth/spreadsheets",
             "https://www.googleapis.com/auth/drive",
         ]
         
-        # Use the modern gspread service_account_from_dict method
         client = gspread.service_account_from_dict(
             st.secrets["gcp_service_account"],
             scopes=scopes
         )
         
-        # 1. Try to open the spreadsheet
         try:
             spreadsheet = client.open(GOOGLE_SHEET_NAME)
         except gspread.SpreadsheetNotFound:
@@ -57,7 +55,6 @@ def connect_to_google_sheets():
             st.error(f"❌ Error opening spreadsheet: {e}")
             return None
 
-        # 2. Try to open the specific worksheet (tab)
         try:
             worksheet = spreadsheet.worksheet(WORKSHEET_NAME)
             return worksheet
@@ -73,23 +70,90 @@ def connect_to_google_sheets():
         st.error(f"❌ **Connection Error:** Could not connect to Google Sheets. Please ensure your `secrets.toml` is configured correctly. Details: {e}")
         return None
 
-# ============ HELPER FUNCTIONS ============
+# ============ AI (GEMINI) INTEGRATION ============
+
+@st.cache_resource
+def get_gemini_model():
+    """Initializes and returns a cached Gemini model instance."""
+    try:
+        gemini_key = st.secrets["gemini_api_key"]
+        genai.configure(api_key=gemini_key)
+        
+        # Define the system instruction for the LLM
+        system_instruction = (
+            "You are an expert assistant for logging daily work. The user will provide a natural language summary "
+            "of their day. Your job is to extract one or more tasks from this summary. "
+            "For each task, you must identify three pieces of information: "
+            "1. 'project_category': The project or main topic (e.g., 'PII Detection', 'Team Meeting', 'General'). "
+            "2. 'accomplishment': A concise summary of the specific task or accomplishment. "
+            "3. 'key_insight': An insight, outcome, or blocker related to the accomplishment. "
+            "If no specific insight is mentioned, infer one or state 'N/A'. "
+            "Always respond with a valid JSON array of task objects, even if you only find one task. "
+            "Do not return an empty array unless the input is completely blank or irrelevant."
+        )
+        
+        # Define the JSON schema we want the LLM to return
+        response_schema = {
+            "type": "ARRAY",
+            "items": {
+                "type": "OBJECT",
+                "properties": {
+                    "project_category": { "type": "STRING" },
+                    "accomplishment": { "type": "STRING" },
+                    "key_insight": { "type": "STRING" }
+                },
+                "required": ["project_category", "accomplishment", "key_insight"]
+            }
+        }
+
+        # Set up the model generation config
+        generation_config = {
+            "response_mime_type": "application/json",
+            "response_schema": response_schema,
+            "temperature": 0.2
+        }
+
+        # Create the model instance
+        model = genai.GenerativeModel(
+            model_name="gemini-2.5-flash-preview-09-2025",
+            system_instruction=system_instruction,
+            generation_config=generation_config
+        )
+        return model
+    except Exception as e:
+        st.error(f"❌ **Gemini AI Error:** Could not initialize the AI model. Check your `gemini_api_key` in Streamlit Secrets. Details: {e}")
+        return None
+
+def call_gemini_to_parse_summary(summary_text, model):
+    """
+    Calls the Gemini API to parse the summary and returns a list of task dicts.
+    """
+    if not model:
+        return None
+        
+    try:
+        with st.spinner("Logger is analyzing your summary..."):
+            response = model.generate_content(summary_text)
+            task_list = json.loads(response.text)
+            return task_list
+    except Exception as e:
+        st.error(f"❌ **AI Parsing Error:** The AI model had trouble understanding the input. Details: {e}")
+        st.error("Please try rephrasing your summary.")
+        return None
+
+# ============ HELPER FUNCTIONS (FROM YOUR CODE) ============
 
 def apply_gsheet_formatting(worksheet):
     """
     Applies formatting to the Google Sheet header and auto-resizes columns.
     """
     try:
-        st.info("Applying Google Sheet formatting (colors, sizing)...")
-        
         # Define the header format
         header_format = gfmt.CellFormat(
             backgroundColor=gfmt.Color(0.91, 0.96, 0.99), # Light blue
             textFormat=gfmt.TextFormat(bold=True, foregroundColor=gfmt.Color(0.05, 0.28, 0.63)), # Dark blue
             horizontalAlignment='CENTER'
         )
-        
-        # Apply header format to row 1 (A1:D1 for 4 columns)
         gfmt.format_cell_range(worksheet, 'A1:D1', header_format)
         
         # Auto-resize columns A through D
@@ -108,7 +172,7 @@ def apply_gsheet_formatting(worksheet):
             ]
         })
     except Exception as e:
-        st.warning(f"⚠️ Could not apply some formatting to Google Sheet. Data was still saved. Error: {e}")
+        st.warning(f"Could not apply some formatting to Google Sheet. Data was still saved. Error: {e}")
 
 
 def save_data_to_gsheet(df_new, worksheet):
@@ -118,29 +182,23 @@ def save_data_to_gsheet(df_new, worksheet):
     - Applies formatting after saving.
     """
     try:
-        # Get all data to check if the sheet is empty
         list_of_lists = worksheet.get_all_values()
         
         rows_to_append = []
         is_empty_sheet = not list_of_lists
         
-        # If the sheet is empty (no headers, no data)
         if is_empty_sheet:
             st.info("Sheet was empty. Writing headers...")
-            # Add the header row first
             headers = df_new.columns.tolist()
             rows_to_append.append(headers)
         
-        # Add the new data rows
         rows_to_append.extend(df_new.values.tolist())
         
-        # Append all new rows (either just data, or headers + data)
         st.info(f"Appending {len(rows_to_append)} row(s) to Google Sheet...")
         worksheet.append_rows(rows_to_append, value_input_option='USER_ENTERED')
             
-        st.success(f"✅ Saved {len(df_new)} new record(s) to Google Sheet: **{GOOGLE_SHEET_NAME}**")
+        st.success(f"Saved {len(df_new)} new record(s) to Google Sheet: **{GOOGLE_SHEET_NAME}**")
         
-        # Apply formatting after saving
         apply_gsheet_formatting(worksheet)
 
     except Exception as e:
@@ -149,91 +207,92 @@ def save_data_to_gsheet(df_new, worksheet):
 
 
 # ============ UI & MAIN LOGIC ============
-st.title("📊 Daily Work Logger (Connected to Google Sheets)")
-st.markdown("Paste your daily work log in CSV format. The app will automatically save it to your Google Sheet.")
+st.title("Daily Work Logger")
+st.markdown("Write your daily work summary in plain English. I will parse it and save it to your Google Sheet.")
 
-# Attempt to connect to Google Sheets
+# Attempt to connect to Google Sheets and get AI Model
 worksheet = connect_to_google_sheets()
+gemini_model = get_gemini_model()
 
 # Only show the rest of the app if the connection was successful
-if worksheet:
-    # --- MOVED COLUMN DEFINITIONS HERE ---
-    cols_4 = ["Date", "Project / Category", "Accomplishment", "Key Insight / Outcome"]
-    cols_3 = ["Project / Category", "Accomplishment", "Key Insight / Outcome"]
-    # --- END OF MOVE ---
+if worksheet and gemini_model:
+    
+    # These are the *exact* column names in your Google Sheet
+    sheet_columns = ["Date", "Project / Category", "Accomplishment", "Key Insight / Outcome"]
 
     with st.expander("📘 How to Use & Example Format", expanded=False):
         st.markdown(f"""
-        **1. Paste Your Data:** Paste one or more lines of comma-separated values into the text box below.
+        **1. Write Your Summary:** Type what you did today in the text box.
         
-        **2. Format (3 or 4 Columns):** This format is designed to be useful for your final internship report.
+        **2. Be Descriptive:** The more detail you give, the better the AI can parse it.
         
-        **4-Column Format (Date included):**
-        `2025-10-24,PII Detection,"Validated package for 5 countries","Package is stable, but found new false-positive"`
+        **Example Input:**
+        > "Today was focused on the PII Detection project. I validated the package for 5 countries, and the main outcome was that the package is stable, but I found a new false-positive. Also had a team meeting about the Q4 roadmap."
 
-        **3-Column Format (Date auto-added):**
-        `PII Detection,"Validated package for 5 countries","Package is stable, but found new false-positive"`
+        **Example AI Output (Saved to Sheet):**
+        | Date | Project / Category | Accomplishment | Key Insight / Outcome |
+        |---|---|---|---|
+        | 2025-10-29 | PII Detection | Validated package for 5 countries | Package is stable, but found new false-positive |
+        | 2025-10-29 | Team Meeting | Discussed Q4 roadmap | N/A |
 
-        **3. Click Save!** Your data will be appended to your Google Sheet named **"{GOOGLE_SHEET_NAME}"**.
+        **3. Click Save!** Your data will be analyzed, parsed, and appended to your Google Sheet.
         """)
 
-    if "csv_input" not in st.session_state:
-        st.session_state.csv_input = ""
+    if "summary_input" not in st.session_state:
+        st.session_state.summary_input = ""
 
-    # Updated placeholder text
-    csv_input = st.text_area(
-        "✍️ **Paste your CSV line(s) here (3 or 4 columns):**",
-        value=st.session_state.csv_input,
+    summary_input = st.text_area(
+        "**Enter your daily work summary:**",
+        value=st.session_state.summary_input,
         height=200,
-        key="csv_input_area",
-        placeholder="Project / Category,Accomplishment,Key Insight / Outcome"
+        key="summary_input_area",
+        placeholder="Today I worked on Project X, finished the Y feature, and had a meeting about Z..."
     )
 
-    if st.button("💾 Save to Google Sheet", type="primary"):
-        if not csv_input.strip():
-            st.warning("⚠️ Please paste some data before saving.")
+    if st.button("Log My Day", type="primary"):
+        if not summary_input.strip():
+            st.warning("Please write a summary before saving.")
         else:
             try:
-                data_io = StringIO(csv_input)
+                # 1. Call the LLM to parse the summary
+                task_list = call_gemini_to_parse_summary(summary_input, gemini_model)
                 
-                # Read CSV without headers to check column count
-                df_new = pd.read_csv(data_io, header=None, dtype=str).fillna("")
-                num_cols = len(df_new.columns)
+                if not task_list:
+                    st.error("❌ **AI Error:** The AI could not extract any tasks. Please try again.")
+                    st.stop()
 
-                # --- UPDATED COLUMN NAMES ---
-                # (Now defined above)
-                # --- END OF UPDATE ---
+                # 2. Convert the list of tasks (dicts) into a DataFrame
+                df_new = pd.DataFrame(task_list)
 
-                if num_cols == 4:
-                    # 4 columns provided, assume Date is included
-                    df_new.columns = cols_4
-                elif num_cols == 3:
-                    # 3 columns provided, assume Date is missing
-                    df_new.columns = cols_3
-                    today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                if df_new.empty:
+                    st.error("❌ **Data Error:** The AI returned an empty list. Please check your summary and try again.")
+                else:
+                    # 3. Add the 'Date' column
+                    today = datetime.now().strftime("%Y-%m-%d")
                     df_new.insert(0, "Date", today)
-                else:
-                    st.error(f"❌ **Column Error:** Expected 3 or 4 columns, but found {num_cols}. Please check your pasted data.")
-                    st.stop() # Stop execution if columns don't match
-                
-                # Check for empty or malformed data
-                if df_new.empty or df_new['Project / Category'].isnull().all():
-                    st.error("❌ **Data Error:** The pasted data appears to be empty or in the wrong format. Please check your CSV.")
-                else:
-                    # Ensure all data is string to avoid API errors
+                    
+                    # 4. Rename AI-friendly keys to match your Sheet's columns
+                    df_new = df_new.rename(columns={
+                        'project_category': 'Project / Category',
+                        'accomplishment': 'Accomplishment',
+                        'key_insight': 'Key Insight / Outcome'
+                    })
+                    
+                    # 5. Ensure column order matches the sheet (in case AI adds extra keys)
+                    df_new = df_new[sheet_columns]
+                    
+                    # 6. Ensure all data is string to avoid API errors
                     df_new = df_new.astype(str)
+                    
+                    # 7. Save to Google Sheets (using your existing function)
                     save_data_to_gsheet(df_new, worksheet)
                     
                     st.markdown("---")
-                    st.subheader("📊 Recently Added:")
+                    st.subheader("AI-Parsed Data (Added to Sheet):")
                     st.dataframe(df_new, use_container_width=True, hide_index=True)
                     
-                    st.session_state.csv_input = ""
+                    st.session_state.summary_input = ""
                     st.rerun()
 
-            except pd.errors.ParserError as e:
-                st.error(f"❌ **CSV Parsing Error:** Could not read the data.")
-                st.error("Please ensure each row has **3 or 4 columns**.")
-                st.error(f"*Details: {e}*")
             except Exception as e:
                 st.error(f"❌ An unexpected error occurred: {e}")
