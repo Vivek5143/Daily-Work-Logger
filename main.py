@@ -6,6 +6,7 @@ import gspread
 import gspread_formatting as gfmt
 import google.generativeai as genai
 import json
+import os
 
 # ============ CONFIGURATION ============
 GOOGLE_SHEET_NAME = "Daily Work Log" 
@@ -19,7 +20,10 @@ st.set_page_config(page_title="📊 AI Daily Work Logger", layout="wide")
 def load_css(file_name):
     """Function to load a local CSS file."""
     try:
-        with open(file_name) as f:
+        # Get the directory where this script is located
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        css_path = os.path.join(script_dir, file_name)
+        with open(css_path, encoding='utf-8') as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     except FileNotFoundError:
         # Don't show an error, just a warning in the console or log if needed
